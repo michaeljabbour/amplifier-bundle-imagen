@@ -23,14 +23,14 @@ generate_image(
     openai_output_compression: int,                    # 0–100; Default: None
     moderation: "auto" | "low",                        # Default: None
     n: int,                                            # 1–10; Default: None
-    openai_model: str,                                 # Default: "gpt-image-2"
+    openai_model: str,                                 # "gpt-image-2" (default) | "gpt-image-1.5" | "gpt-image-1"
     
     # Gemini parameters
     size: "1K" | "2K" | "4K",                        # Gemini size (separate from OpenAI size)
     aspect_ratio: str,                                 # Default: None
     reference_images: list[str],                       # Base64-encoded; Default: None
     enable_google_search: bool,                        # Default: False
-    gemini_model: str,                                 # Default: None (uses server default)
+    gemini_model: str,                                 # Canonical ID or alias; default: "nano-banana-2"
     
     # Shared parameters
     enhance_prompt: bool,                              # Default: True
@@ -75,6 +75,34 @@ generate_image(
 | `"5:4"` | Landscape | Slight landscape |
 | `"21:9"` | Ultra-wide | Cinematic widescreen |
 
+### Model Selection
+
+#### `openai_model` valid values
+
+| Value | Default | Description |
+|-------|---------|-------------|
+| `"gpt-image-2"` | **Yes** | ChatGPT Images 2.0. Full param surface, ~99% text accuracy, 3–8 s. |
+| `"gpt-image-1.5"` | No | DALL-E 3 migration target (DALL-E 3 API ends **2026-05-12**). Mid-tier cost. `style` param supported. |
+| `"gpt-image-1"` | No | Legacy April 2025 model. Lower cost tier; use when cost matters more than quality. |
+
+#### `gemini_model` valid values (canonical ID or alias)
+
+| Canonical ID | Alias | Endpoint | Default | Notes |
+|---|---|---|---|---|
+| `gemini-3.1-flash-image-preview` | `nano-banana-2` | `generate_content` | **Yes** | Current Google default; fast. |
+| `gemini-3-pro-image-preview` | `nano-banana-pro` | `generate_content` | No | Thinking mode; 4K; highest fidelity. |
+| `imagen-4.0-generate-001` | `imagen-4` | `generate_images` | No | ⚠️ T2I only. Shuts down 2026-06-24. |
+| `imagen-4.0-ultra-generate-001` | `imagen-4-ultra` | `generate_images` | No | ⚠️ T2I only. ~4.2× standard cost. Shuts down 2026-06-24. |
+| `imagen-4.0-fast-generate-001` | `imagen-4-fast` | `generate_images` | No | ⚠️ T2I only. Fastest + cheapest. Shuts down 2026-06-24. |
+
+Friendly aliases resolve to their canonical ID inside the server; unknown model names fall back to the provider default with a warning.
+
+> **Gemini model → endpoint behavior**
+>
+> `GeminiProvider` routes internally based on model family:
+> - **Nano Banana** (`nano-banana-2`, `nano-banana-pro`) → `generate_content` — full feature set: reference images, Google Search, multi-turn editing, all aspect ratios.
+> - **Imagen 4** (`imagen-4`, `imagen-4-ultra`, `imagen-4-fast`) → `generate_images` — text-to-image only; n=1–4 images per call. **Silently ignores** `reference_images`, `enable_google_search`, and prior conversation history (logged as warnings; call proceeds without them).
+
 ### Return Value
 
 The tool returns either markdown (default) or JSON. JSON shape:
@@ -82,7 +110,7 @@ The tool returns either markdown (default) or JSON. JSON shape:
 ```json
 {
   "provider": "openai" | "gemini",
-  "model": "gpt-image-2" | "gemini-3-pro-image-preview",
+  "model": "<actual model ID used — e.g., 'gpt-image-2', 'gemini-3.1-flash-image-preview'>",
   "output_path": "/path/to/saved/image.png",
   "prompt": "the prompt used",
   "revised_prompt": "model's revised interpretation (OpenAI only)",
