@@ -1,0 +1,12 @@
+bundle:
+  name: image-editing-behavior
+  version: 1.0.0
+  description: Sequential image editing with preserve-pixel fidelity via OpenAI gpt-image-2 edit_image and input_fidelity=high
+
+agents:
+  include:
+    - imagen:image-editor
+
+context:
+  include:
+    - imagen:context/imagen-awareness.md

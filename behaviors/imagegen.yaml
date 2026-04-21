@@ -1,0 +1,8 @@
+bundle:
+  name: imagegen-behavior
+  version: 1.0.0
+  description: Full image generation suite — creative direction, prompt engineering, sequential editing, and visual analysis via OpenAI gpt-image-2 and Gemini Nano Banana Pro
+
+includes:
+  - bundle: imagen:behaviors/image-generation
+  - bundle: imagen:behaviors/image-editing

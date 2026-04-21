@@ -1,0 +1,14 @@
+bundle:
+  name: image-generation-behavior
+  version: 1.0.0
+  description: Creative image generation — director, prompt engineer, and visual researcher for OpenAI gpt-image-2 and Gemini Nano Banana Pro
+
+agents:
+  include:
+    - imagen:image-director
+    - imagen:image-prompt-engineer
+    - imagen:image-researcher
+
+context:
+  include:
+    - imagen:context/imagen-awareness.md
