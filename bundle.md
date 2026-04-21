@@ -1,7 +1,7 @@
 ---
 bundle:
   name: imagen
-  version: 1.0.0
+  version: 1.1.0
   description: Image generation and editing specialists — creative direction, prompt engineering, sequential editing, and visual analysis powered by OpenAI gpt-image-2 and Gemini Nano Banana Pro
 
 includes:

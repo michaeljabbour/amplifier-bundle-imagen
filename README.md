@@ -194,6 +194,41 @@ amplifier-bundle-imagen/
 ```
 
 ---
+---
+
+## Pre-composed bundles
+
+The `bundles/` directory ships two pre-wired variants so you can include the imagen suite with a single line rather than composing providers manually.
+
+### `bundles/with-anthropic.yaml` — Turnkey variant
+
+Includes this bundle plus an Anthropic Claude Opus provider. Use this when you want an out-of-the-box image-generation agent experience without hand-wiring a routing matrix.
+
+**Requires:** `ANTHROPIC_API_KEY` in your environment.
+
+```yaml
+includes:
+  - bundle: git+https://github.com/michaeljabbour/amplifier-bundle-imagen@v1.1.0#subdirectory=bundles/with-anthropic.yaml
+```
+
+The `foundation` bundle comes in transitively via `amplifier-bundle-imagen` — do not re-include it. Agents' `model_role:` fields fall through to the provider's `default_model` automatically.
+
+Cost-conscious users can swap the provider to Sonnet by editing one line:
+
+```yaml
+  - bundle: foundation:providers/anthropic-sonnet   # instead of anthropic-opus
+```
+
+### `bundles/standalone-local.yaml` — Dev variant (bundle authors only)
+
+Points at the local bundle checkout (relative path `../bundle.md`) so you can test bundle changes without pushing to GitHub. **Not intended for end users.**
+
+```yaml
+includes:
+  - bundle: /path/to/amplifier-bundle-imagen/bundles/standalone-local.yaml
+```
+
+> **Note:** The `imagegen` MCP server must still be configured separately in your `settings.yaml`. This variant only swaps the bundle source, not the MCP integration. See [Prerequisites](#prerequisites--register-the-imagegen-mcp-server) above.
 
 ## License
 

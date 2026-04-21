@@ -91,17 +91,12 @@ generate_image(
 |---|---|---|---|---|
 | `gemini-3.1-flash-image-preview` | `nano-banana-2` | `generate_content` | **Yes** | Current Google default; fast. |
 | `gemini-3-pro-image-preview` | `nano-banana-pro` | `generate_content` | No | Thinking mode; 4K; highest fidelity. |
-| `imagen-4.0-generate-001` | `imagen-4` | `generate_images` | No | ⚠️ T2I only. Shuts down 2026-06-24. |
-| `imagen-4.0-ultra-generate-001` | `imagen-4-ultra` | `generate_images` | No | ⚠️ T2I only. ~4.2× standard cost. Shuts down 2026-06-24. |
-| `imagen-4.0-fast-generate-001` | `imagen-4-fast` | `generate_images` | No | ⚠️ T2I only. Fastest + cheapest. Shuts down 2026-06-24. |
 
 Friendly aliases resolve to their canonical ID inside the server; unknown model names fall back to the provider default with a warning.
 
 > **Gemini model → endpoint behavior**
 >
-> `GeminiProvider` routes internally based on model family:
-> - **Nano Banana** (`nano-banana-2`, `nano-banana-pro`) → `generate_content` — full feature set: reference images, Google Search, multi-turn editing, all aspect ratios.
-> - **Imagen 4** (`imagen-4`, `imagen-4-ultra`, `imagen-4-fast`) → `generate_images` — text-to-image only; n=1–4 images per call. **Silently ignores** `reference_images`, `enable_google_search`, and prior conversation history (logged as warnings; call proceeds without them).
+> All Gemini models (`nano-banana-2`, `nano-banana-pro`) use the `generate_content` endpoint with the full feature set: reference images, Google Search grounding, multi-turn conversational editing, and all aspect ratios.
 
 ### Return Value
 

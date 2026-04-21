@@ -20,15 +20,9 @@ The first decision in any prompt engineering task is: **which provider?** That a
 
 **`gpt-image-1`** — Legacy April 2025 OpenAI model at a lower cost tier. Use when generation volume is high and quality requirements are modest. Not recommended for text-heavy or sequential-edit workflows.
 
-**Nano Banana 2** (`gemini-3.1-flash-image-preview` / `nano-banana-2`) — Google's current default Gemini model; fast, full conversational feature set. Supports reference images (up to 14), Google Search grounding, multi-turn editing. Use when you need Gemini's photorealism at speed. Recommended migration target for Imagen 4 Standard and Fast users (2026-06-24 deadline).
+**Nano Banana 2** (`gemini-3.1-flash-image-preview` / `nano-banana-2`) — Google's current default Gemini model; fast, full conversational feature set. Supports reference images (up to 14), Google Search grounding, multi-turn editing. Use when you need Gemini's photorealism at speed.
 
-**Nano Banana Pro** (`gemini-3-pro-image-preview` / `nano-banana-pro`) — Highest fidelity in the Gemini lineup; Thinking mode enabled. Best for luxury product shots, editorial portraits where material physics matter, and 4K large-format output. Recommended migration target for Imagen 4 Ultra users.
-
-**Imagen 4 Standard** (`imagen-4.0-generate-001` / `imagen-4`) ⚠️ — Mid-tier text-to-image, 2K output, n=1–4 per call. Stateless; no reference images or search grounding. Shuts down **2026-06-24**. Use only for existing pipelines with a migration plan.
-
-**Imagen 4 Ultra** (`imagen-4.0-ultra-generate-001` / `imagen-4-ultra`) ⚠️ — Highest-quality single-shot text-to-image at ~4.2× standard cost; n=1–4 per call. For one-shot batch work where quality is paramount. Shuts down **2026-06-24**.
-
-**Imagen 4 Fast** (`imagen-4.0-fast-generate-001` / `imagen-4-fast`) ⚠️ — Fastest and cheapest text-to-image; 1K max resolution, n=1–4 per call. For high-volume batch pipelines where cost and speed beat quality. Shuts down **2026-06-24**.
+**Nano Banana Pro** (`gemini-3-pro-image-preview` / `nano-banana-pro`) — Highest fidelity in the Gemini lineup; Thinking mode enabled. Best for luxury product shots, editorial portraits where material physics matter, and 4K large-format output.
 
 ---
 
@@ -309,13 +303,6 @@ Pass as `reference_images=references` to `generate_image` or `conversational_ima
 | Print / large format | `4K` | `3:2` or `4:3` |
 | Fast iteration | `1K` | `1:1` |
 | Cinematic widescreen | `2K` | `21:9` |
-
-### Nano Banana vs Imagen 4 Prompt Differences
-
-Both Nano Banana models and Imagen 4 models accept the photography-vocabulary grammar described above. Key differences:
-
-- **Nano Banana 2 and Pro**: Free-form prompts; can reference prior conversation context; benefit from reference image instructions (e.g., "match the lighting of the reference photos"); support multi-turn refinement. Use the full five-element grammar above.
-- **Imagen 4 models** (`imagen-4`, `imagen-4-ultra`, `imagen-4-fast`): Stateless text-to-image — each call is independent. `reference_images`, `enable_google_search`, and conversation history are silently ignored. Keep prompts fully self-contained. Imagen 4 enforces a **480-token prompt limit** — trim the grammar to the three most impactful elements (subject, lighting, style). Migrating from Imagen 4 to Nano Banana requires only removing stateful assumptions; the photography-vocabulary grammar transfers directly. ⚠️ **Imagen 4 shuts down 2026-06-24.**
 
 ---
 

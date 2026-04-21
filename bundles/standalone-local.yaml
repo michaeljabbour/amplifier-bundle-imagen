@@ -1,0 +1,12 @@
+bundle:
+  name: imagen-local-dev
+  version: 1.1.0
+  description: Dev variant using the local bundle checkout — for testing bundle changes before push. The imagegen MCP server is still configured externally at the app level (settings.yaml).
+
+includes:
+  - bundle: ../bundle.md
+  - bundle: foundation:providers/anthropic-opus
+
+# Note: The imagegen MCP server must be configured separately in your
+# Amplifier settings.yaml — this variant only swaps the bundle source,
+# not the MCP integration.

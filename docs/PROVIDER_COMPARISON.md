@@ -1,6 +1,6 @@
 # Provider Comparison Guide
 
-Reference for choosing between OpenAI (gpt-image-2, gpt-image-1.5, gpt-image-1) and Google (Nano Banana 2, Nano Banana Pro, Imagen 4 variants — ⚠️ shutting down 2026-06-24). Covers model roster, capability matrix, decision tree, cost and latency, auto-selection heuristics, model-selection guidance, and deprecation watchlist.
+Reference for choosing between OpenAI (gpt-image-2, gpt-image-1.5, gpt-image-1) and Google (Nano Banana 2, Nano Banana Pro). Covers model roster, capability matrix, decision tree, cost and latency, auto-selection heuristics, model-selection guidance, and deprecation watchlist.
 
 ---
 
@@ -29,15 +29,6 @@ All three support: `edit_image` sequential editing, transparent background, inpa
 
 Both support: reference images (up to 14), Google Search grounding, multi-turn conversational editing, all 10 aspect ratios, 1K/2K/4K sizes. `nano-banana-pro` additionally enables Thinking mode for highest-fidelity output.
 
-**Imagen 4 family** — `generate_images` endpoint; text-to-image only, stateless, n=1–4 per call. ⚠️ **Entire family shuts down 2026-06-24. Migrate to Nano Banana.**
-
-| Canonical ID | Alias | Speed | Max Resolution | Cost |
-|---|---|---|---|---|
-| `imagen-4.0-generate-001` | `imagen-4` | Medium | 2K | Mid |
-| `imagen-4.0-ultra-generate-001` | `imagen-4-ultra` | Slow | 2K | ~4.2× standard |
-| `imagen-4.0-fast-generate-001` | `imagen-4-fast` | Fast | 1K | Lowest |
-
-Imagen 4 **does not support** reference images, Google Search, multi-turn conversation, or prior conversation history. These parameters are silently ignored (logged as warnings) if passed.
 
 ---
 
@@ -50,11 +41,7 @@ Imagen 4 **does not support** reference images, Google Search, multi-turn conver
 | **`gpt-image-1`** | Good | Good | 1792×1024 | No | No | Yes | 1–10 | — |
 | **Nano Banana 2** | Moderate | Excellent | 2K | Yes (14) | Yes | No | 1 | — |
 | **Nano Banana Pro** | Moderate | Excellent | 4K | Yes (14) | Yes | No | 1 | — |
-| **Imagen 4 Std ⚠️** | N/A | Good | 2K | No | No | No | 1–4 | 2026-06-24 |
-| **Imagen 4 Ultra ⚠️** | N/A | Best | 2K | No | No | No | 1–4 | 2026-06-24 |
-| **Imagen 4 Fast ⚠️** | N/A | Good | 1K | No | No | No | 1–4 | 2026-06-24 |
-
-*Edit/Masks = `edit_image` sequential editing, inpainting with PNG masks, transparent background output (OpenAI only). N/A = text-to-image only model; text rendering accuracy is not applicable.*
+*Edit/Masks = `edit_image` sequential editing, inpainting with PNG masks, transparent background output (OpenAI only).*
 
 ---
 
@@ -129,11 +116,7 @@ Batch efficiency: `n=4` at `low` quality ≈ `n=1` at `high` quality, useful for
 | Nano Banana Pro | `1K` | Low | 10–15 s |
 | Nano Banana Pro | `2K` | Medium | 15–20 s |
 | Nano Banana Pro | `4K` | Higher | 20–30 s |
-| Imagen 4 Std ⚠️ | `2K` | Mid | 5–15 s |
-| Imagen 4 Ultra ⚠️ | `2K` | ~4.2× standard | 15–30 s |
-| Imagen 4 Fast ⚠️ | `1K` | Lowest | 3–8 s |
-
-Nano Banana models generate one image per call; parallelize concurrent calls for variants. Imagen 4 models support n=1–4 per call.
+Nano Banana models generate one image per call; parallelize concurrent calls for variants.
 
 ---
 
@@ -185,11 +168,7 @@ Auto-selection operates at the **provider level** (OpenAI vs Gemini). Within a p
 | Cost matters more than quality | `gpt-image-1` (via `openai_model`) | Legacy OpenAI model at a lower cost tier |
 | Migrating from DALL-E 3 | `gpt-image-1.5` (via `openai_model`) | Designated DALL-E 3 migration target; `style="vivid"/"natural"` supported |
 | Photorealistic image where text also matters | `nano-banana-pro` (via `gemini_model`) | Thinking mode improves text accuracy in a photorealistic context |
-| Highest-quality one-shot text-to-image (before 2026-06-24) | `imagen-4-ultra` (via `gemini_model`) | Best T2I output quality; 1–4 images per call |
-| High-volume text-to-image pipeline (before 2026-06-24) | `imagen-4-fast` (via `gemini_model`) | Cheapest and fastest T2I; 1K max resolution |
-| Moving off Imagen 4 | `nano-banana-2` (speed) or `nano-banana-pro` (quality) | Google's recommended migration targets; gains reference images + Search |
 
-**Do not start new pipelines on Imagen 4.** Shutdown date is 2026-06-24; Google's recommended replacement is Nano Banana.
 
 ---
 
@@ -327,8 +306,8 @@ All long-lived pipelines should plan around these hard shutdown dates.
 |-------------|--------------|-----------------|-------|
 | DALL-E 3 API | **2026-05-12** | `gpt-image-1.5` | DALL-E 3 API endpoint ends; prompt style stays compatible |
 | `gemini-2.5-flash-preview-image-generation` | **2026-10-02** | `nano-banana-2` | Legacy Gemini flash image model |
-| `imagen-4.0-generate-001` (`imagen-4`) | **2026-06-24** | `nano-banana-2` or `nano-banana-pro` | Entire Imagen 4 family shutdown |
-| `imagen-4.0-ultra-generate-001` (`imagen-4-ultra`) | **2026-06-24** | `nano-banana-pro` | Highest T2I quality → Pro for best match |
-| `imagen-4.0-fast-generate-001` (`imagen-4-fast`) | **2026-06-24** | `nano-banana-2` | Fastest T2I → Nano Banana 2 for speed match |
-
 *Dates reflect public deprecation announcements. Verify against official provider docs before planning mission-critical migrations.*
+
+### Removed in v0.3.0
+
+The `generate_images`-based Google model family (Standard, Ultra, Fast) was removed from `imagen-mcp` in v0.3.0. The entire family shuts down **2026-06-24** and provided no editing, reference image, or Google Search support — the bundle's specialist agents could not meaningfully use it. **Migration:** → **Nano Banana 2** (speed match) or **Nano Banana Pro** (quality match).
