@@ -1,6 +1,6 @@
 bundle:
   name: imagen-anthropic
-  version: 1.1.0
+  version: 1.2.0
   description: Imagen suite with Anthropic Claude Opus — turnkey image generation and editing with an Anthropic-powered orchestration LLM
 
 includes:
