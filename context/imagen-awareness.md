@@ -1,8 +1,8 @@
 # Image Generation Capabilities
 
-You have access to the `imagegen` MCP server exposing six tools for AI image generation and editing.
+You have access to six native Amplifier tools for image generation and editing, backed by OpenAI gpt-image-2 and Google Gemini Nano Banana Pro.
 
-## Available Tools (MCP — already registered)
+## Available Tools
 
 - **`generate_image`** — Unified generation; auto-selects OpenAI gpt-image-2 or Gemini Nano Banana Pro based on prompt; returns image path and metadata.
 - **`conversational_image`** — Multi-turn refinement with guided dialogue; use for iterative creative exploration.

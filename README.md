@@ -1,6 +1,8 @@
 # amplifier-bundle-imagen
 
-An Amplifier bundle that adds specialist image generation and editing agents to any session. Powered by the `imagegen` MCP server, which exposes OpenAI **gpt-image-2** and **Gemini Nano Banana Pro** (gemini-3-pro-image-preview).
+An Amplifier bundle that adds specialist image generation and editing agents, plus a **self-contained Python tool adapter**, to any session. Powered by [imagen-mcp](https://github.com/michaeljabbour/imagen-mcp), which exposes OpenAI **gpt-image-2** and **Gemini Nano Banana Pro** (gemini-3-pro-image-preview).
+
+No `settings.yaml` MCP registration required — the bundle ships its own `tool-imagen` module that spawns or imports `imagen-mcp` directly.
 
 ---
 
@@ -8,47 +10,40 @@ An Amplifier bundle that adds specialist image generation and editing agents to 
 
 | Component | Description |
 |-----------|-------------|
+| **1 tool module** | `tool-imagen` — canonical Amplifier tool module exposing 6 image tools (generate, conversational, edit, list) |
 | **4 specialist agents** | Creative director, prompt engineer, sequential editor, visual analyst |
 | **1 compound skill** | `design-visual-asset` — end-to-end pipeline from brief to delivered image |
 | **3 behavior bundles** | `imagegen` (full), `image-generation`, `image-editing` (à-la-carte) |
 | **1 awareness context** | Thin root-session pointer that enforces delegation without bloating context |
 | **6 documentation guides** | Prompt engineering, provider comparison, creative direction, edit workflow, visual analysis, tool reference |
 
-The bundle namespace is `imagen`. The underlying MCP server is registered separately (see Prerequisites).
+The bundle namespace is `imagen`. The tool module is loaded automatically when the bundle is included — no `mcp_servers:` registration needed.
 
 ---
 
-## Prerequisites — Register the imagegen MCP Server
+## Prerequisites
 
-> **This bundle does NOT register the MCP server.** The `imagegen` MCP server must be present in your session before this bundle's agents can call any image tools.
+### 1. Install imagen-mcp
 
-### 1. Clone or install the server
+The tool module uses [imagen-mcp](https://github.com/michaeljabbour/imagen-mcp) as its provider layer. It can be installed as a package or cloned locally:
 
 ```bash
-git clone https://github.com/michaeljabbour/imagen-mcp.git
-cd imagen-mcp
-uv sync
+# Option 1: package install
+pip install git+https://github.com/michaeljabbour/imagen-mcp.git
+
+# Option 2: local clone (useful if you want to point tool-imagen at a specific checkout)
+git clone https://github.com/michaeljabbour/imagen-mcp.git ~/imagen-mcp
+cd ~/imagen-mcp && uv sync
 ```
 
-### 2. Register it in your Amplifier settings
+The `tool-imagen` module auto-discovers imagen-mcp in this order:
+1. `imagen_mcp_path` config value (absolute path to a local clone)
+2. `imagen_mcp` Python package on the current PATH
+3. `~/imagen-mcp/src/server.py` (default local clone location)
 
-Add the following to `~/.amplifier/settings.yaml`:
+### 2. Set API keys
 
-```yaml
-mcp_servers:
-  - name: imagegen
-    command: uv
-    args:
-      - run
-      - --directory
-      - /path/to/imagen-mcp
-      - imagen-mcp
-    env:
-      OPENAI_API_KEY: ${OPENAI_API_KEY}
-      GEMINI_API_KEY: ${GEMINI_API_KEY}
-```
-
-Set your API keys in your environment:
+At least one provider key is required; set both for auto-selection to work across all prompt types.
 
 ```bash
 export OPENAI_API_KEY="sk-..."
@@ -81,37 +76,52 @@ includes:
 @foundation:context/shared/common-system-base.md
 ```
 
-### Option B — Include just the behavior (à-la-carte)
+### Option B — Include just a behavior (à-la-carte)
 
-For generation only (no editor):
+Each à-la-carte behavior ships the tool module via the umbrella `imagegen` behavior. If you want to load `image-generation` or `image-editing` *without* loading `imagegen`, add the tool declaration yourself:
 
 ```yaml
 includes:
   - bundle: foundation
   - bundle: git+https://github.com/michaeljabbour/amplifier-bundle-imagen@main#subdirectory=behaviors/image-generation.yaml
+
+tools:
+  - module: tool-imagen
+    source: git+https://github.com/michaeljabbour/amplifier-bundle-imagen@main#subdirectory=modules/tool-imagen
 ```
 
-For editing only:
+### Option C — Use the full behavior in a downstream bundle
 
 ```yaml
 includes:
   - bundle: foundation
-  - bundle: git+https://github.com/michaeljabbour/amplifier-bundle-imagen@main#subdirectory=behaviors/image-editing.yaml
-```
-
-### Option C — Use the full behavior in your own bundle
-
-```yaml
-includes:
-  - bundle: foundation
-  - bundle: imagen:behaviors/imagegen   # after loading the bundle above
+  - bundle: imagen:behaviors/imagegen
 ```
 
 ---
 
-## Quickstart
+## Configuring the tool module
 
-Once the bundle is loaded and the MCP server is registered:
+The tool module accepts the following optional config under `tools[].config`:
+
+| Key | Default | Description |
+|-----|---------|-------------|
+| `mode` | `"subprocess"` | `"subprocess"` (spawn imagen-mcp as a child) or `"direct"` (in-process import) |
+| `imagen_mcp_path` | — | Absolute path to a local imagen-mcp clone |
+| `openai_api_key` | env `OPENAI_API_KEY` | Override API key |
+| `gemini_api_key` | env `GEMINI_API_KEY` | Override API key |
+| `default_provider` | `"auto"` | `"auto"`, `"openai"`, `"gemini"` |
+| `output_dir` | `~/Downloads/images` | Base directory for saved images |
+| `default_openai_size` | `"1536x1024"` | |
+| `default_gemini_size` | `"2K"` | |
+| `enable_google_search` | `false` | Gemini Google Search grounding |
+| `log_level` | `"WARNING"` | imagen-mcp log verbosity |
+
+Overrides apply only to this bundle's `imagegen` behavior. See [modules/tool-imagen/README.md](modules/tool-imagen/README.md) for module internals.
+
+---
+
+## Quickstart
 
 ### Generate an image (full pipeline)
 
@@ -170,8 +180,13 @@ Executes the full 6-step pipeline: brief → prompt → generate → critique �
 amplifier-bundle-imagen/
 ├── bundle.md                          # Root bundle — includes foundation + imagegen behavior
 ├── README.md                          # This file
+├── modules/
+│   └── tool-imagen/                   # Native Amplifier tool module (6 tools)
+│       ├── pyproject.toml
+│       ├── amplifier_module_tool_imagen/__init__.py
+│       └── tests/
 ├── behaviors/
-│   ├── imagegen.yaml                  # Full: composes image-generation + image-editing
+│   ├── imagegen.yaml                  # Full: declares tool-imagen + composes generation + editing
 │   ├── image-generation.yaml          # Director + prompt-engineer + researcher
 │   └── image-editing.yaml             # Editor only
 ├── agents/
@@ -194,7 +209,6 @@ amplifier-bundle-imagen/
 ```
 
 ---
----
 
 ## Pre-composed bundles
 
@@ -208,7 +222,7 @@ Includes this bundle plus an Anthropic Claude Opus provider. Use this when you w
 
 ```yaml
 includes:
-  - bundle: git+https://github.com/michaeljabbour/amplifier-bundle-imagen@v1.1.0#subdirectory=bundles/with-anthropic.yaml
+  - bundle: git+https://github.com/michaeljabbour/amplifier-bundle-imagen@v1.2.0#subdirectory=bundles/with-anthropic.yaml
 ```
 
 The `foundation` bundle comes in transitively via `amplifier-bundle-imagen` — do not re-include it. Agents' `model_role:` fields fall through to the provider's `default_model` automatically.
@@ -228,7 +242,7 @@ includes:
   - bundle: /path/to/amplifier-bundle-imagen/bundles/standalone-local.yaml
 ```
 
-> **Note:** The `imagegen` MCP server must still be configured separately in your `settings.yaml`. This variant only swaps the bundle source, not the MCP integration. See [Prerequisites](#prerequisites--register-the-imagegen-mcp-server) above.
+---
 
 ## License
 

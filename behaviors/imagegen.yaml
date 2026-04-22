@@ -1,7 +1,16 @@
 bundle:
   name: imagegen-behavior
-  version: 1.0.0
+  version: 1.2.0
   description: Full image generation suite — creative direction, prompt engineering, sequential editing, and visual analysis via OpenAI gpt-image-2 and Gemini Nano Banana Pro
+
+tools:
+  - module: tool-imagen
+    source: git+https://github.com/michaeljabbour/amplifier-bundle-imagen@main#subdirectory=modules/tool-imagen
+    config:
+      mode: subprocess
+      default_provider: auto
+      default_openai_size: "1536x1024"
+      default_gemini_size: "2K"
 
 includes:
   - bundle: imagen:behaviors/image-generation
