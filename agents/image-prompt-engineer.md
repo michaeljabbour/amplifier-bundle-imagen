@@ -175,6 +175,23 @@ For sequential refinement, hand off to `imagen:image-editor` with `edit_image` r
 
 ---
 
+
+## Reference-image protocol — when continuity is in play
+
+For multi-shot work, character continuity, or any project that touches existing IP, **reference-image conditioning is not optional**. Text-only prompts produce identity drift within 2–3 generations. The full protocol lives in `imagen:docs/REFERENCE_IMAGE_DISCIPLINE.md` — load it and apply.
+
+Quick decision tree at prompt-engineering time:
+
+1. **Is this part of a sequence or campaign?** If yes → identify the persistent anchor (first approved frame OR operator-supplied source IP) and the immediate predecessor shot. Both go in the reference set for Nano Banana Pro.
+2. **Is this a targeted modification of an approved shot?** If yes → switch to `imagen:image-editor` with `gpt-image-2 edit_image`, `input_fidelity=high`. Don't re-engineer the whole prompt; describe only the change.
+3. **Multiple candidate refs available?** Rank by **lighting > setting > composition > face-clarity** (per D029 setting-match-first). Promote the setting-matched ref to primary; demote face-perfect-but-wrong-setting refs.
+4. **Are refs larger than 1400 px on the longest edge?** Downsize before sending to Nano Banana Pro (`convert SRC -resize 1400x1400\> -quality 95 DST`). Oversized refs silently fail to condition.
+
+The discipline applies whether you're invoked through `amplifier-bundle-creative` (where shots come from a creative-director's spec) or through `amplifier-bundle-imagen` directly (where the user is iterating one image at a time and asking for a follow-up that should match). Same protocol.
+
+
+@imagen:docs/REFERENCE_IMAGE_DISCIPLINE.md
+@imagen:docs/MODEL_SELECTION_GUIDE.md
 @imagen:docs/PROMPT_ENGINEERING_GUIDE.md
 
 @imagen:docs/TOOL_REFERENCE.md
