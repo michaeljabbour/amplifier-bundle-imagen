@@ -24,10 +24,20 @@ All three support: `edit_image` sequential editing, transparent background, inpa
 
 | Canonical ID | Alias | Default | Speed | Max Resolution |
 |---|---|---|---|---|
-| `gemini-3.1-flash-image-preview` | `nano-banana-2` | **Yes** | 8–15 s | 2K |
-| `gemini-3-pro-image-preview` | `nano-banana-pro` | No | 15–25 s | 4K |
+| `gemini-3.1-flash-image` | `nano-banana-2` | **Yes** | 8–15 s | 2K |
+| `gemini-3-pro-image` | `nano-banana-pro` | No | 15–25 s | 4K |
 
 Both support: reference images (up to 14), Google Search grounding, multi-turn conversational editing, all 10 aspect ratios, 1K/2K/4K sizes. `nano-banana-pro` additionally enables Thinking mode for highest-fidelity output.
+
+**Imagen 4 family** — `generate_images` endpoint; single-shot, top-tier photorealism.
+
+| Canonical ID | Default | Speed | Max Resolution |
+|---|---|---|---|
+| `imagen-4.0-generate-001` | No | medium | 2048×2048 |
+| `imagen-4.0-ultra-generate-001` | No | slow | 2048×2048 |
+| `imagen-4.0-fast-generate-001` | No | fastest | 2048×2048 |
+
+Imagen does **not** support reference images, Google Search grounding, or conversational refinement, and accepts a narrower aspect-ratio set (`1:1`, `3:4`, `4:3`, `9:16`, `16:9`). Request it explicitly via `gemini_model="imagen-4.0-…"`. Use it for the highest photorealistic fidelity; use a Nano Banana model when you need editing, grounding, or multi-turn work.
 
 
 ---
@@ -157,7 +167,7 @@ Auto-selection uses heuristics; creative intent sometimes diverges from keyword 
 
 ### Model-Level Selection Within a Provider
 
-Auto-selection operates at the **provider level** (OpenAI vs Gemini). Within a provider, the specific model defaults to the provider's current best: `gpt-image-2` for OpenAI; `gemini-3.1-flash-image-preview` (Nano Banana 2) for Gemini. Override at the model level with `openai_model` or `gemini_model`. See **When to Explicitly Pick a Model** below.
+Auto-selection operates at the **provider level** (OpenAI vs Gemini). Within a provider, the specific model defaults to the provider's current best: `gpt-image-2` for OpenAI; `gemini-3.1-flash-image` (Nano Banana 2) for Gemini. Override at the model level with `openai_model` or `gemini_model`. See **When to Explicitly Pick a Model** below.
 
 ---
 
@@ -305,7 +315,7 @@ All long-lived pipelines should plan around these hard shutdown dates.
 | Model / API | Shutdown Date | Migration Target | Notes |
 |-------------|--------------|-----------------|-------|
 | DALL-E 3 API | **2026-05-12** | `gpt-image-1.5` | DALL-E 3 API endpoint ends; prompt style stays compatible |
-| `gemini-2.5-flash-preview-image-generation` | **2026-10-02** | `nano-banana-2` | Legacy Gemini flash image model |
+| `gemini-2.5-flash-preview-image-generation` | **retired** | `gemini-2.5-flash-image` | Preview flash image model; superseded by the GA `gemini-2.5-flash-image` |
 *Dates reflect public deprecation announcements. Verify against official provider docs before planning mission-critical migrations.*
 
 ### Removed in v0.3.0

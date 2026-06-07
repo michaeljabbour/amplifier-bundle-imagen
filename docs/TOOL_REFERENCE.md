@@ -89,14 +89,19 @@ generate_image(
 
 | Canonical ID | Alias | Endpoint | Default | Notes |
 |---|---|---|---|---|
-| `gemini-3.1-flash-image-preview` | `nano-banana-2` | `generate_content` | **Yes** | Current Google default; fast. |
-| `gemini-3-pro-image-preview` | `nano-banana-pro` | `generate_content` | No | Thinking mode; 4K; highest fidelity. |
+| `gemini-3.1-flash-image` | `nano-banana-2` | `generate_content` | **Yes** | Current Google default; fast. |
+| `gemini-3-pro-image` | `nano-banana-pro` | `generate_content` | No | Thinking mode; 4K; highest fidelity. |
+| `imagen-4.0-generate-001` | — | `generate_images` | No | Imagen 4 — balanced photorealism up to 2048px. Single-shot only. |
+| `imagen-4.0-ultra-generate-001` | — | `generate_images` | No | Imagen 4 Ultra — best-in-class photorealism. Single-shot only. |
+| `imagen-4.0-fast-generate-001` | — | `generate_images` | No | Imagen 4 Fast — fastest photorealistic tier. Single-shot only. |
 
-Friendly aliases resolve to their canonical ID inside the server; unknown model names fall back to the provider default with a warning.
+Friendly aliases resolve to their canonical ID inside the server; unknown model names are passed through to the API as requested (or fall back to the provider default when no model is given).
 
 > **Gemini model → endpoint behavior**
 >
-> All Gemini models (`nano-banana-2`, `nano-banana-pro`) use the `generate_content` endpoint with the full feature set: reference images, Google Search grounding, multi-turn conversational editing, and all aspect ratios.
+> Native Gemini models (`nano-banana-2`, `nano-banana-pro`) use the `generate_content` endpoint with the full feature set: reference images, Google Search grounding, multi-turn conversational editing, and all aspect ratios.
+>
+> The **Imagen 4 family** (`imagen-4.0-*`) uses the separate `generate_images` endpoint. It is **single-shot**: no reference images, Google Search grounding, or conversational refinement, and a narrower aspect-ratio set (`1:1`, `3:4`, `4:3`, `9:16`, `16:9`). Choose it for top-tier photorealism; choose a native model when you need editing/grounding/conversation.
 
 ### Return Value
 
@@ -105,7 +110,7 @@ The tool returns either markdown (default) or JSON. JSON shape:
 ```json
 {
   "provider": "openai" | "gemini",
-  "model": "<actual model ID used — e.g., 'gpt-image-2', 'gemini-3.1-flash-image-preview'>",
+  "model": "<actual model ID used — e.g., 'gpt-image-2', 'gemini-3.1-flash-image'>",
   "output_path": "/path/to/saved/image.png",
   "prompt": "the prompt used",
   "revised_prompt": "model's revised interpretation (OpenAI only)",
@@ -363,7 +368,7 @@ list_providers()
     },
     {
       "name": "gemini",
-      "model": "gemini-3-pro-image-preview",
+      "model": "gemini-3-pro-image",
       "configured": true,
       "api_key_present": true,
       "capabilities": ["generate", "4K", "reference_images", "google_search"]
@@ -444,7 +449,7 @@ list_gemini_models()
 {
   "models": [
     {
-      "name": "gemini-3-pro-image-preview",
+      "name": "gemini-3-pro-image",
       "display_name": "Gemini Nano Banana Pro",
       "supported_sizes": ["1K", "2K", "4K"],
       "supported_aspect_ratios": ["1:1", "3:2", "2:3", "4:3", "3:4", "16:9", "9:16", "4:5", "5:4", "21:9"],
@@ -452,7 +457,7 @@ list_gemini_models()
       "google_search_supported": true
     },
     {
-      "name": "gemini-2.5-flash-preview-image-generation",
+      "name": "gemini-2.5-flash-image",
       "display_name": "Gemini 2.5 Flash",
       "supported_sizes": ["1K", "2K"],
       "reference_images_supported": false,
@@ -464,7 +469,7 @@ list_gemini_models()
 
 ### Typical Use Case
 
-Call when configuring a Gemini generation request to confirm which models are available and their capabilities. Use `gemini_model="gemini-3-pro-image-preview"` for highest quality; use `gemini-2.5-flash-preview-image-generation` for faster iteration.
+Call when configuring a Gemini generation request to confirm which models are available and their capabilities. Use `gemini_model="gemini-3-pro-image"` for highest quality; use `gemini-2.5-flash-image` for faster iteration.
 
 ---
 
