@@ -29,15 +29,7 @@ All three support: `edit_image` sequential editing, transparent background, inpa
 
 Both support: reference images (up to 14), Google Search grounding, multi-turn conversational editing, all 10 aspect ratios, 1K/2K/4K sizes. `nano-banana-pro` additionally enables Thinking mode for highest-fidelity output.
 
-**Imagen 4 family** — `generate_images` endpoint; single-shot, top-tier photorealism.
-
-| Canonical ID | Default | Speed | Max Resolution |
-|---|---|---|---|
-| `imagen-4.0-generate-001` | No | medium | 2048×2048 |
-| `imagen-4.0-ultra-generate-001` | No | slow | 2048×2048 |
-| `imagen-4.0-fast-generate-001` | No | fastest | 2048×2048 |
-
-Imagen does **not** support reference images, Google Search grounding, or conversational refinement, and accepts a narrower aspect-ratio set (`1:1`, `3:4`, `4:3`, `9:16`, `16:9`). Request it explicitly via `gemini_model="imagen-4.0-…"`. Use it for the highest photorealistic fidelity; use a Nano Banana model when you need editing, grounding, or multi-turn work.
+**Imagen 4 family** — removed. `imagen-4.0-*` support was dropped in `imagen-mcp` v0.3.0 and Google shut the models down on **2026-06-24**. See [Removed in v0.3.0](#removed-in-v030) for migration targets.
 
 
 ---
@@ -304,7 +296,6 @@ Only if you want photorealism. If the brief calls for editorial illustration, co
 
 **"Auto-selection will always get it right."**
 Auto-selection uses prompt text heuristics. Complex briefs with mixed signals (e.g., a photorealistic painting of a coffee menu) require explicit `provider=` override. When you have a clear provider preference, always set it explicitly rather than relying on auto-selection.
-test
 
 ---
 

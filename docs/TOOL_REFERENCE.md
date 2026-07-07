@@ -91,9 +91,6 @@ generate_image(
 |---|---|---|---|---|
 | `gemini-3.1-flash-image` | `nano-banana-2` | `generate_content` | **Yes** | Current Google default; fast. |
 | `gemini-3-pro-image` | `nano-banana-pro` | `generate_content` | No | Thinking mode; 4K; highest fidelity. |
-| `imagen-4.0-generate-001` | — | `generate_images` | No | Imagen 4 — balanced photorealism up to 2048px. Single-shot only. |
-| `imagen-4.0-ultra-generate-001` | — | `generate_images` | No | Imagen 4 Ultra — best-in-class photorealism. Single-shot only. |
-| `imagen-4.0-fast-generate-001` | — | `generate_images` | No | Imagen 4 Fast — fastest photorealistic tier. Single-shot only. |
 
 Friendly aliases resolve to their canonical ID inside the server; unknown model names are passed through to the API as requested (or fall back to the provider default when no model is given).
 
@@ -101,7 +98,7 @@ Friendly aliases resolve to their canonical ID inside the server; unknown model 
 >
 > Native Gemini models (`nano-banana-2`, `nano-banana-pro`) use the `generate_content` endpoint with the full feature set: reference images, Google Search grounding, multi-turn conversational editing, and all aspect ratios.
 >
-> The **Imagen 4 family** (`imagen-4.0-*`) uses the separate `generate_images` endpoint. It is **single-shot**: no reference images, Google Search grounding, or conversational refinement, and a narrower aspect-ratio set (`1:1`, `3:4`, `4:3`, `9:16`, `16:9`). Choose it for top-tier photorealism; choose a native model when you need editing/grounding/conversation.
+> The **Imagen 4 family** (`imagen-4.0-*`) is **no longer supported** — it was removed from `imagen-mcp` in v0.3.0 and Google shut the models down on **2026-06-24**. Requests for `imagen-4.0-*` IDs will fail upstream. Migrate to `nano-banana-2` (speed match) or `nano-banana-pro` (quality match).
 
 ### Return Value
 
