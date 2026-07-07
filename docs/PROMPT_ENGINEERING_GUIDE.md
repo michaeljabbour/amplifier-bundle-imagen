@@ -20,9 +20,9 @@ The first decision in any prompt engineering task is: **which provider?** That a
 
 **`gpt-image-1`** — Legacy April 2025 OpenAI model at a lower cost tier. Use when generation volume is high and quality requirements are modest. Not recommended for text-heavy or sequential-edit workflows.
 
-**Nano Banana 2** (`gemini-3.1-flash-image-preview` / `nano-banana-2`) — Google's current default Gemini model; fast, full conversational feature set. Supports reference images (up to 14), Google Search grounding, multi-turn editing. Use when you need Gemini's photorealism at speed.
+**Nano Banana 2** (`gemini-3.1-flash-image` / `nano-banana-2`) — Google's current default Gemini model; fast, full conversational feature set. Supports reference images (up to 14), Google Search grounding, multi-turn editing. Use when you need Gemini's photorealism at speed.
 
-**Nano Banana Pro** (`gemini-3-pro-image-preview` / `nano-banana-pro`) — Highest fidelity in the Gemini lineup; Thinking mode enabled. Best for luxury product shots, editorial portraits where material physics matter, and 4K large-format output.
+**Nano Banana Pro** (`gemini-3-pro-image` / `nano-banana-pro`) — Highest fidelity in the Gemini lineup; Thinking mode enabled. Best for luxury product shots, editorial portraits where material physics matter, and 4K large-format output.
 
 ---
 

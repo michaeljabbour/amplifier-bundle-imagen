@@ -1,6 +1,6 @@
 # amplifier-bundle-imagen
 
-An Amplifier bundle that adds specialist image generation and editing agents, plus a **self-contained Python tool adapter**, to any session. Powered by [imagen-mcp](https://github.com/michaeljabbour/imagen-mcp), which exposes OpenAI **gpt-image-2** and **Gemini Nano Banana Pro** (gemini-3-pro-image-preview).
+An Amplifier bundle that adds specialist image generation and editing agents, plus a **self-contained Python tool adapter**, to any session. Powered by [imagen-mcp](https://github.com/michaeljabbour/imagen-mcp), which exposes OpenAI **gpt-image-2** and **Gemini Nano Banana Pro** (gemini-3-pro-image).
 
 No `settings.yaml` MCP registration required — the bundle ships its own `tool-imagen` module that spawns or imports `imagen-mcp` directly.
 

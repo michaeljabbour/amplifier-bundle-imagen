@@ -2,7 +2,7 @@
 Amplifier tool module for imagen-mcp multi-provider image generation.
 
 Exposes six native Amplifier tools backed by OpenAI gpt-image-2 and Google
-Gemini Nano Banana Pro (gemini-3-pro-image-preview) via the imagen-mcp server.
+Gemini Nano Banana Pro (gemini-3-pro-image) via the imagen-mcp server.
 
 Tools:
   generate_image        Primary generation with auto provider selection
@@ -98,7 +98,7 @@ _GENERATE_IMAGE_SCHEMA: dict[str, Any] = {
         },
         "gemini_model": {
             "type": "string",
-            "description": "Override the Gemini model. Default: gemini-3-pro-image-preview.",
+            "description": "Override the Gemini model. Default: gemini-3-pro-image.",
         },
     },
     "required": ["prompt"],
