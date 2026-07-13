@@ -1,7 +1,16 @@
 bundle:
   name: image-editing-behavior
-  version: 1.0.0
-  description: Sequential image editing with preserve-pixel fidelity via OpenAI gpt-image-2 edit_image and input_fidelity=high
+  version: 2.0.0
+  description: Self-contained sequential image editing with automatic high-fidelity inputs, approval checkpoints, policy preflight, and final-artifact QA
+
+tools:
+  - module: tool-imagen
+    source: ../modules/tool-imagen
+    config:
+      mode: mcp
+      default_provider: auto
+      default_openai_size: "1536x1024"
+      default_gemini_size: "1K"
 
 agents:
   include:
@@ -10,3 +19,4 @@ agents:
 context:
   include:
     - imagen:context/imagen-awareness.md
+    - imagen:context/image-production-policy.md

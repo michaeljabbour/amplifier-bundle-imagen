@@ -1,11 +1,11 @@
 ---
 bundle:
   name: imagen
-  version: 1.2.0
-  description: Image generation and editing specialists with a self-contained tool adapter — creative direction, prompt engineering, sequential editing, and visual analysis powered by OpenAI gpt-image-2 and Gemini Nano Banana Pro
+  version: 2.0.0
+  description: Adaptive image generation and editing workflows with specialist direction, human approval gates, visual QA, and provenance-aware delivery
 
 includes:
-  - bundle: git+https://github.com/microsoft/amplifier-foundation@main
+  - bundle: git+https://github.com/microsoft/amplifier-foundation@v2.1.2
   - bundle: imagen:behaviors/imagegen
 ---
 

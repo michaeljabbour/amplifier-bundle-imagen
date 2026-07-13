@@ -1,8 +1,9 @@
 bundle:
   name: imagen-anthropic
-  version: 1.2.0
+  version: 2.0.0
   description: Imagen suite with Anthropic Claude Opus — turnkey image generation and editing with an Anthropic-powered orchestration LLM
 
 includes:
-  - bundle: git+https://github.com/michaeljabbour/amplifier-bundle-imagen@main
+  - bundle: git+https://github.com/microsoft/amplifier-foundation@v2.1.2
+  - bundle: imagen:behaviors/imagegen
   - bundle: foundation:providers/anthropic-opus

@@ -1,0 +1,70 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.11", "3.12", "3.13", "3.14"]
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@fac544c07dec837d0ccb6301d7b5580bf5edae39 # v8.2.0
+
+      - name: Create Python environment
+        run: uv venv --python ${{ matrix.python-version }}
+
+      - name: Install deterministic test dependencies
+        run: uv pip install PyYAML jsonschema -e "./modules/tool-imagen[dev]"
+
+      - name: Validate bundle contracts and guidance
+        run: uv run --no-sync python scripts/validate_bundle.py
+
+      - name: Check formatting
+        run: uv run --no-sync ruff format --check modules/tool-imagen scripts evals
+
+      - name: Lint implementation and validator
+        run: uv run --no-sync ruff check modules/tool-imagen scripts evals
+
+      - name: Execute deterministic high-risk behavioral gate
+        env:
+          PYTHONPATH: .
+          PYTEST_DISABLE_PLUGIN_AUTOLOAD: "1"
+        run: |
+          uv run --no-sync pytest -q evals/test_behavioral_harness.py
+          uv run --no-sync python scripts/run_behavioral_evals.py \
+            --verify evals/results/2026-07-13.json
+
+      - name: Build and smoke-test isolated adapter wheel
+        run: |
+          uv build --project modules/tool-imagen --out-dir "$RUNNER_TEMP/tool-imagen-dist"
+          uv venv --python ${{ matrix.python-version }} "$RUNNER_TEMP/tool-imagen-smoke"
+          uv pip install --python "$RUNNER_TEMP/tool-imagen-smoke/bin/python" "$RUNNER_TEMP"/tool-imagen-dist/*.whl
+          cd "$RUNNER_TEMP"
+          "$RUNNER_TEMP/tool-imagen-smoke/bin/python" "$GITHUB_WORKSPACE/modules/tool-imagen/tests/installed_distribution_smoke.py"
+
+      - name: Run adapter tests with coverage gate
+        env:
+          PYTHONPATH: modules/tool-imagen
+          PYTEST_DISABLE_PLUGIN_AUTOLOAD: "1"
+        run: >-
+          uv run --no-sync pytest -q -p pytest_asyncio.plugin -p pytest_cov.plugin
+          --cov=amplifier_module_tool_imagen
+          --cov-report=term-missing
+          --cov-fail-under=80
+          modules/tool-imagen/tests

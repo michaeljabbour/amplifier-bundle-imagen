@@ -1,0 +1,90 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/michaeljabbour/amplifier-bundle-imagen/schemas/artifact-manifest.schema.json",
+  "title": "Imagen artifact manifest",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "artifact_id",
+    "path",
+    "sha256",
+    "created_at",
+    "provider",
+    "model",
+    "parameters",
+    "sources",
+    "rights",
+    "qa",
+    "accessibility"
+  ],
+  "properties": {
+    "schema_version": { "const": "1.0" },
+    "artifact_id": { "type": "string", "minLength": 1 },
+    "parent_artifact_id": { "type": ["string", "null"] },
+    "path": { "type": "string", "minLength": 1 },
+    "sha256": { "type": "string", "pattern": "^[a-fA-F0-9]{64}$" },
+    "created_at": { "type": "string", "format": "date-time" },
+    "provider": { "type": "string", "minLength": 1 },
+    "model": { "type": "string", "minLength": 1 },
+    "request_id": { "type": ["string", "null"] },
+    "conversation_id": { "type": ["string", "null"] },
+    "prompt": { "type": "string" },
+    "prompt_sha256": { "type": "string", "pattern": "^[a-fA-F0-9]{64}$" },
+    "parameters": { "type": "object" },
+    "sources": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["source_id", "sha256", "role"],
+        "properties": {
+          "source_id": { "type": "string", "minLength": 1 },
+          "sha256": { "type": "string", "pattern": "^[a-fA-F0-9]{64}$" },
+          "role": { "type": "string", "minLength": 1 }
+        }
+      }
+    },
+    "rights": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["assertion", "consent_confirmed", "synthetic_disclosure"],
+      "properties": {
+        "assertion": { "type": "string", "minLength": 1 },
+        "consent_confirmed": { "type": ["boolean", "null"] },
+        "synthetic_disclosure": { "type": "string", "minLength": 1 }
+      }
+    },
+    "qa": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["status", "checked_artifact_sha256", "checks"],
+      "properties": {
+        "status": { "enum": ["pending", "passed", "failed", "waived"] },
+        "checked_artifact_sha256": { "type": "string", "pattern": "^[a-fA-F0-9]{64}$" },
+        "checks": { "type": "array", "items": { "type": "string" } },
+        "approver": { "type": ["string", "null"] },
+        "limitations": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "accessibility": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["alt_text", "literal_text_transcript"],
+      "properties": {
+        "alt_text": { "type": "string", "minLength": 1 },
+        "literal_text_transcript": { "type": "string" }
+      }
+    },
+    "provenance_signals": {
+      "type": "array",
+      "items": { "enum": ["synthid", "c2pa", "other-verified"] },
+      "uniqueItems": true
+    },
+    "metadata_removed_and_verified": { "type": "boolean" }
+  },
+  "anyOf": [
+    { "required": ["prompt"] },
+    { "required": ["prompt_sha256"] }
+  ]
+}

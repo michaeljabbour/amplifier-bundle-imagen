@@ -1,7 +1,7 @@
 ---
 name: image-ascii-art
 description: Bidirectional image <-> ASCII-art pipeline. Generate (or take) an image and render it as photorealistic ASCII via brightness mapping, OR rasterize ASCII back into an image — and decide which direction yields the best result, iterating between them. Supports adjustable width/detail, inverted ramps, 24-bit ANSI color, and zoomable HTML export. USE WHEN the user says 'ASCII art', 'make ASCII art of X', 'convert to ASCII', 'render as text/characters', 'ASCII portrait', 'image to ASCII', or 'ASCII to image'.
-version: 1.0.0
+version: 1.1.0
 ---
 
 # Skill: image-ascii-art
@@ -48,9 +48,11 @@ final artifact the user actually wants.
   > centered and filling the frame, strong rim lighting, plain dark background,
   > cinematic headshot."
 
-  Save with `output_path` so you have a stable file path. If a safety filter
-  rejects a named/branded subject, rephrase to a generic descriptive prompt —
-  for ASCII the silhouette and lighting matter, not the trademark.
+  Save with `output_path` so you have a stable file path. If the provider
+  returns a moderation-blocked or other user error, do not automatically retry
+  or rephrase it to evade the decision. Explain the block generically and ask
+  the user whether they want a substantively different, policy-compliant
+  subject.
 
 ---
 

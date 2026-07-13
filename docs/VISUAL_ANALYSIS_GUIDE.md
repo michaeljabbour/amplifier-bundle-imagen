@@ -1,6 +1,10 @@
 # Visual Analysis Guide
 
-Reference for `imagen:image-researcher` — how to systematically extract visual properties from images, produce structured analysis reports, handle URL vs local-file sources, and generate reverse-prompt reconstructions for handoff to `imagen:image-prompt-engineer`.
+Reference for `imagen:image-researcher` — how to systematically extract visual
+properties when actual pixels are available to a vision-capable model. A local
+path, URL string, file-existence result, or base64 text blob is not visual
+access; without a real image block/client preview, limit work to verifiable file
+facts and leave visual QA pending.
 
 ---
 
@@ -8,7 +12,7 @@ Reference for `imagen:image-researcher` — how to systematically extract visual
 
 Visual analysis serves three functions in the imagen pipeline:
 
-1. **Style matching**: When a user provides a reference image they want to match, visual analysis extracts the visual DNA in text form so a prompt engineer can reproduce it without needing to pass the reference image to the model (which only Gemini supports, and only for up to 14 images).
+1. **Style matching**: When a user provides an authorized reference image, visual analysis extracts the relevant visual properties and the prompt engineer labels each source's role. Both provider workflows can use image inputs; Gemini limits are model-specific (Nano Banana 2: up to 10 objects/4 characters; Pro: up to 6 objects/5 characters/3 style references, 14 total).
 
 2. **Quality assessment**: When evaluating generated images against a brief, visual analysis provides objective observation before the subjective critique. What is actually in the image vs what the brief specified?
 
@@ -151,7 +155,8 @@ Mechanisms:
 **What to look for:**
 
 - **Apparent resolution**: Tack-sharp detail (high resolution) / soft but intentional (low DoF or medium format softness) / soft and unintentional (motion blur, compression artifacts).
-- **Depth of field**: Estimate aperture equivalent from background blur. Near-wide-open (f/1.2–f/2) → heavy bokeh, very shallow. f/5.6–f/8 → moderate. f/11+ → deep focus.
+- **Depth of field**: Describe visible focus falloff as shallow, moderate, or
+  deep. Do not infer an exact aperture from appearance alone.
 - **Shutter character**: Frozen motion (fast shutter) / motion blur (slow shutter / panning) / unclear.
 - **Grain / noise character**: None (clean digital) / fine-grained (high-ISO digital or medium-speed film) / heavy grain (high-ISO or pushed film) / chromatic noise (high-ISO digital).
 - **Lens character**: Any visible distortion (barrel = wide angle), vignetting, chromatic aberration at edges, anamorphic oval bokeh?
@@ -163,9 +168,11 @@ Mechanisms:
 Report properties relevant to the image's primary subject:
 
 **For portraits:**
-- Apparent age range
-- Ethnicity (as relevant to brief accuracy)
-- Expression and emotional state
+- Use identity or demographic descriptors only when the user supplies them and
+  they are necessary to the authorized brief; do not infer ethnicity, race,
+  health, or other sensitive traits from appearance.
+- Describe observable pose and facial presentation without asserting an
+  internal emotional state.
 - Gaze direction (at camera / averted / downward / upward)
 - Clothing style and color
 - Hair style, length, color
