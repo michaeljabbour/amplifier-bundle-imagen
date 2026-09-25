@@ -265,6 +265,81 @@ def test_resolve_rejects_uninitialized_checkout(tmp_path: Path) -> None:
         mod._resolve_server_command({"imagen_mcp_path": checkout})
 
 
+class _FakeEntryPoint(SimpleNamespace):
+    pass
+
+
+class _FakeDistribution:
+    """A fake ``importlib.metadata.Distribution`` advertising one entry point."""
+
+    def __init__(self, entry_points: tuple[Any, ...]) -> None:
+        self.entry_points = entry_points
+
+
+def _fake_distribution_factory(known: dict[str, _FakeDistribution]):
+    def _distribution(name: str) -> _FakeDistribution:
+        try:
+            return known[name]
+        except KeyError:
+            raise mod.metadata.PackageNotFoundError(name) from None
+
+    return _distribution
+
+
+_IMAGEN_MCP_ENTRY_POINT = (
+    _FakeEntryPoint(group="console_scripts", name="imagen-mcp", value="imagen_mcp.server:main"),
+)
+
+
+def test_entry_point_command_prefers_which_over_distribution_lookup(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setattr(mod.shutil, "which", lambda *a, **k: "/usr/local/bin/imagen-mcp")
+    command = mod._entry_point_command()
+    assert command is not None
+    assert command.command == str(Path("/usr/local/bin/imagen-mcp").resolve())
+
+
+def test_entry_point_command_falls_back_to_new_distribution_name(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setattr(mod.shutil, "which", lambda *a, **k: None)
+    monkeypatch.setattr(
+        mod.metadata,
+        "distribution",
+        _fake_distribution_factory({"imagen": _FakeDistribution(_IMAGEN_MCP_ENTRY_POINT)}),
+    )
+    command = mod._entry_point_command()
+    assert command is not None
+    assert command.command == sys.executable
+    assert command.args == ("-c", command.args[1])
+    assert "distribution('imagen')" in command.args[1]
+
+
+def test_entry_point_command_falls_back_to_old_distribution_name(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Pre-rename installs (distribution still named imagen-mcp) still resolve."""
+    monkeypatch.setattr(mod.shutil, "which", lambda *a, **k: None)
+    monkeypatch.setattr(
+        mod.metadata,
+        "distribution",
+        _fake_distribution_factory({"imagen-mcp": _FakeDistribution(_IMAGEN_MCP_ENTRY_POINT)}),
+    )
+    command = mod._entry_point_command()
+    assert command is not None
+    assert command.command == sys.executable
+    assert "distribution('imagen-mcp')" in command.args[1]
+
+
+def test_entry_point_command_returns_none_when_nothing_installed(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setattr(mod.shutil, "which", lambda *a, **k: None)
+    monkeypatch.setattr(mod.metadata, "distribution", _fake_distribution_factory({}))
+    assert mod._entry_point_command() is None
+
+
 def test_result_output_prefers_structured_content_and_preserves_images() -> None:
     structured = CallToolResult(
         content=[TextContent(type="text", text='{"answer": 42}')],
@@ -410,28 +485,28 @@ async def test_list_tools_rejects_missing_and_unreviewed_tools(
     assert [definition.name for definition in definitions] == ["first"]
 
 
-def test_server_identity_requires_imagen_mcp_0_4_or_newer() -> None:
-    valid = SimpleNamespace(serverInfo=SimpleNamespace(name="imagen_mcp", version="0.4.0"))
+def test_server_identity_requires_imagen_mcp_0_5_or_newer() -> None:
+    valid = SimpleNamespace(serverInfo=SimpleNamespace(name="imagen_mcp", version="0.5.0"))
     mod._validate_server_identity(valid)
 
     with pytest.raises(RuntimeError, match="unexpected MCP server"):
         mod._validate_server_identity(
-            SimpleNamespace(serverInfo=SimpleNamespace(name="other", version="0.4.0"))
+            SimpleNamespace(serverInfo=SimpleNamespace(name="other", version="0.5.0"))
         )
-    with pytest.raises(RuntimeError, match=">=0.4,<0.5"):
+    with pytest.raises(RuntimeError, match=">=0.5,<0.6"):
         mod._validate_server_identity(
-            SimpleNamespace(serverInfo=SimpleNamespace(name="imagen_mcp", version="0.3.9"))
+            SimpleNamespace(serverInfo=SimpleNamespace(name="imagen_mcp", version="0.4.9"))
         )
-    with pytest.raises(RuntimeError, match=">=0.4,<0.5"):
+    with pytest.raises(RuntimeError, match=">=0.5,<0.6"):
         mod._validate_server_identity(
             SimpleNamespace(serverInfo=SimpleNamespace(name="imagen_mcp", version="1.0.0"))
         )
-    with pytest.raises(RuntimeError, match=">=0.4,<0.5"):
+    with pytest.raises(RuntimeError, match=">=0.5,<0.6"):
         mod._validate_server_identity(
-            SimpleNamespace(serverInfo=SimpleNamespace(name="imagen_mcp", version="0.5.0"))
+            SimpleNamespace(serverInfo=SimpleNamespace(name="imagen_mcp", version="0.6.0"))
         )
     mod._validate_server_identity(
-        SimpleNamespace(serverInfo=SimpleNamespace(name="imagen_mcp", version="0.4.99"))
+        SimpleNamespace(serverInfo=SimpleNamespace(name="imagen_mcp", version="0.5.99"))
     )
     with pytest.raises(RuntimeError, match="invalid server version"):
         mod._validate_server_identity(

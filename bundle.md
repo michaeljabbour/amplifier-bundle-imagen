@@ -1,7 +1,7 @@
 ---
 bundle:
   name: imagen
-  version: 2.0.0
+  version: 2.1.0
   description: Adaptive image generation and editing workflows with specialist direction, human approval gates, visual QA, and provenance-aware delivery
 
 includes:

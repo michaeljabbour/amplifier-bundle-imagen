@@ -1,5 +1,27 @@
 # Changelog
 
+## 2.1.0 — 2026-09-25
+
+### Changed
+
+- Followed the upstream `imagen-mcp` -> `imagen` project rename
+  (`michaeljabbour/imagen-mcp` -> `michaeljabbour/imagen`; the old GitHub
+  URL redirects). Install/checkout instructions across the README and
+  `modules/tool-imagen/README.md` now point at the renamed repository and
+  its `v0.5.0` release tag. The MCP server executable (`imagen-mcp`) and
+  the `imagen_mcp` Python package/module name are unchanged.
+- `tool-imagen`'s installed-entry-point resolution
+  (`_entry_point_command`) now looks up the renamed `imagen` distribution
+  first, falling back to the pre-rename `imagen-mcp` distribution name for
+  environments that have not yet upgraded. This was a real fix, not just a
+  rename: the prior code only recognized the `imagen-mcp` distribution
+  name and would fail to resolve the console script by metadata lookup
+  once users upgraded to the renamed package (`shutil.which` still finds
+  it if the script is on `PATH`; this only affects the metadata fallback).
+- Bumped the supported `imagen-mcp` server contract from `>=0.4,<0.5` to
+  `>=0.5,<0.6` to track the renamed project's 0.5.0 release.
+- `tool-imagen` module version 2.0.0 -> 2.1.0 for the above.
+
 ## 2.0.0 — 2026-07-13
 
 ### Added

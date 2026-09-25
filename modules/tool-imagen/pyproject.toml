@@ -1,6 +1,6 @@
 [project]
 name = "amplifier-module-tool-imagen"
-version = "2.0.0"
+version = "2.1.0"
 description = "Amplifier adapter that exposes the reviewed imagen-mcp tool contract through the official MCP SDK."
 readme = "README.md"
 requires-python = ">=3.11"

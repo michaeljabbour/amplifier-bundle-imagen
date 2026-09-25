@@ -1,6 +1,7 @@
 # amplifier-module-tool-imagen
 
-Amplifier adapter for [imagen-mcp](https://github.com/michaeljabbour/imagen-mcp).
+Amplifier adapter for [imagen](https://github.com/michaeljabbour/imagen) (renamed
+from `imagen-mcp`; the MCP server executable is still called `imagen-mcp`).
 Version 2 uses the official MCP Python SDK and discovers reviewed tool schemas
 from the running server during mount. Schemas are not copied into the adapter,
 but tool names are fail-closed behind an explicit allowlist; contract changes
@@ -34,7 +35,7 @@ flattens that sole wrapper for Amplifier while retaining `$defs`, then restores
 `{"params": ...}` on the MCP call. Zero-argument and ordinary multi-argument
 tools are passed through unchanged.
 
-The supported imagen-mcp `>=0.4,<0.5` contract currently advertises:
+The supported imagen-mcp `>=0.5,<0.6` contract currently advertises:
 
 | Name | Purpose |
 |------|---------|
@@ -53,20 +54,21 @@ names fail mount by default instead of silently expanding the agent's authority.
 ## Installation
 
 The adapter depends on `amplifier-core>=1.6,<2` and `mcp>=1.26,<2`, and targets
-imagen-mcp `>=0.4,<0.5`. The image server is a separate runtime and must either
-be independently installed from the immutable v0.4.0 Git tag or initialized as
-a local checkout. For a reproducible VCS installation:
+imagen-mcp `>=0.5,<0.6`. The image server is a separate runtime -- the `imagen`
+project (renamed from `imagen-mcp`; its GitHub URL redirects) -- and must
+either be independently installed from the immutable v0.5.0 Git tag or
+initialized as a local checkout. For a reproducible VCS installation:
 
 ```bash
 python3 -m pip install \
-  "imagen-mcp @ git+https://github.com/michaeljabbour/imagen-mcp.git@v0.4.0"
+  "imagen @ git+https://github.com/michaeljabbour/imagen.git@v0.5.0"
 ```
 
 For source development, use a checkout:
 
 ```bash
-git clone https://github.com/michaeljabbour/imagen-mcp ~/dev/imagen-mcp
-cd ~/dev/imagen-mcp && uv sync
+git clone https://github.com/michaeljabbour/imagen ~/dev/imagen
+cd ~/dev/imagen && uv sync
 ```
 
 For a checkout, point the bundle at its root (the directory containing
@@ -74,7 +76,7 @@ For a checkout, point the bundle at its root (the directory containing
 
 ```yaml
 config:
-  imagen_mcp_path: ~/dev/imagen-mcp
+  imagen_mcp_path: ~/dev/imagen
 ```
 
 For a checkout, the adapter requires a checkout-local `.venv` or `venv` Python

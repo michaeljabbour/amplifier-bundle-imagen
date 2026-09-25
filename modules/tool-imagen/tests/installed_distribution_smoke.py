@@ -11,7 +11,7 @@ def main() -> None:
     installed = distribution("amplifier-module-tool-imagen")
     requirements = installed.metadata.get_all("Requires-Dist") or []
 
-    assert installed.version == module.__version__ == "2.0.0"
+    assert installed.version == module.__version__ == "2.1.0"
     assert installed.metadata["License-Expression"] == "MIT"
     assert any(str(path).endswith("licenses/LICENSE") for path in (installed.files or ()))
     assert any(requirement.startswith("amplifier-core") for requirement in requirements)

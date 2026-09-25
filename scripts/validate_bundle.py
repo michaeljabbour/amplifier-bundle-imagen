@@ -71,12 +71,12 @@ def main() -> int:
     parsed = {path: yaml_file(path, failures) for path in yaml_paths}
 
     root_meta = frontmatter(ROOT / "bundle.md", failures)
-    if root_meta.get("bundle", {}).get("version") != "2.0.0":
-        fail("bundle.md: expected version 2.0.0", failures)
+    if root_meta.get("bundle", {}).get("version") != "2.1.0":
+        fail("bundle.md: expected version 2.1.0", failures)
 
     for path, data in parsed.items():
-        if data.get("bundle", {}).get("version") != "2.0.0":
-            fail(f"{path.relative_to(ROOT)}: expected version 2.0.0", failures)
+        if data.get("bundle", {}).get("version") != "2.1.0":
+            fail(f"{path.relative_to(ROOT)}: expected version 2.1.0", failures)
 
     for relative in ("bundles/standalone-local.yaml", "bundles/with-anthropic.yaml"):
         variant = parsed[ROOT / relative]
@@ -163,11 +163,11 @@ def main() -> int:
         sources = skills_tools[0].get("config", {}).get("skills", [])
         expected_source = (
             "git+https://github.com/michaeljabbour/"
-            "amplifier-bundle-imagen@v2.0.0#subdirectory=skills"
+            "amplifier-bundle-imagen@v2.1.0#subdirectory=skills"
         )
         if sources != [expected_source]:
             fail(
-                "tool-skills must register the immutable v2.0.0 skills source",
+                "tool-skills must register the immutable v2.1.0 skills source",
                 failures,
             )
 

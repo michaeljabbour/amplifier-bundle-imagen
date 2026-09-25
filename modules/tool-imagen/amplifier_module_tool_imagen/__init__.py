@@ -45,7 +45,7 @@ from mcp.client.stdio import get_default_environment, stdio_client
 from mcp.shared.exceptions import McpError
 
 __amplifier_module_type__ = "tool"
-__version__ = "2.0.0"
+__version__ = "2.1.0"
 
 logger = logging.getLogger(__name__)
 
@@ -62,7 +62,7 @@ _SUPPORTED_TOOL_NAMES = frozenset(
     }
 )
 _SUPPORTED_SERVER_NAMES = frozenset({"imagen_mcp", "imagen-mcp"})
-_SUPPORTED_SERVER_VERSION = (0, 4)
+_SUPPORTED_SERVER_VERSION = (0, 5)
 _MAX_TOOL_OUTPUT_BYTES = 128 * 1024
 _BINARY_RESULT_FIELDS = frozenset(
     {
@@ -209,7 +209,7 @@ def _validate_server_identity(result: Any) -> None:
         raise RuntimeError(f"imagen-mcp returned an invalid server version: {version!r}")
     parsed = (int(match.group(1)), int(match.group(2)))
     if parsed != _SUPPORTED_SERVER_VERSION:
-        raise RuntimeError(f"imagen-mcp {version} is incompatible; supported range is >=0.4,<0.5")
+        raise RuntimeError(f"imagen-mcp {version} is incompatible; supported range is >=0.5,<0.6")
 
 
 def _positive_timeout(config: dict[str, Any], key: str, default: float) -> float:
@@ -262,7 +262,7 @@ def _clone_command(path: Path) -> _ServerCommand | None:
 
     raise RuntimeError(
         f"imagen-mcp checkout at {path} has no local Python environment; "
-        "run 'uv sync' (imagen-mcp >=0.4) before mounting it"
+        "run 'uv sync' (imagen-mcp >=0.5) before mounting it"
     )
 
 
@@ -277,25 +277,34 @@ def _entry_point_command() -> _ServerCommand | None:
         if candidate:
             return _ServerCommand(str(Path(candidate).resolve()))
 
-    try:
-        distribution = metadata.distribution("imagen-mcp")
-        entry_point = next(
-            ep
-            for ep in distribution.entry_points
-            if ep.group == "console_scripts" and ep.name == "imagen-mcp"
-        )
-    except (metadata.PackageNotFoundError, StopIteration):
-        return None
+    # The distribution was renamed from "imagen-mcp" to "imagen"; the console
+    # script it installs (and looks up here) is still named "imagen-mcp" --
+    # that name belongs to the MCP server executable, not the project.  Try
+    # the current distribution name first, then the pre-rename one so an
+    # environment that has not yet upgraded still resolves.
+    for distribution_name in ("imagen", "imagen-mcp"):
+        try:
+            distribution = metadata.distribution(distribution_name)
+            entry_point = next(
+                ep
+                for ep in distribution.entry_points
+                if ep.group == "console_scripts" and ep.name == "imagen-mcp"
+            )
+        except (metadata.PackageNotFoundError, StopIteration):
+            continue
 
-    # Keep the bootstrap source constant.  The installed distribution controls
-    # the entry point, just as it would through its generated console script.
-    bootstrap = (
-        "from importlib.metadata import distribution;"
-        "next(e for e in distribution('imagen-mcp').entry_points "
-        "if e.group == 'console_scripts' and e.name == 'imagen-mcp').load()()"
-    )
-    logger.debug("Using installed imagen-mcp entry point %s", entry_point.value)
-    return _ServerCommand(sys.executable, ("-c", bootstrap))
+        # Keep the bootstrap source constant.  The installed distribution
+        # controls the entry point, just as it would through its generated
+        # console script.
+        bootstrap = (
+            "from importlib.metadata import distribution;"
+            f"next(e for e in distribution({distribution_name!r}).entry_points "
+            "if e.group == 'console_scripts' and e.name == 'imagen-mcp').load()()"
+        )
+        logger.debug("Using installed imagen-mcp entry point %s", entry_point.value)
+        return _ServerCommand(sys.executable, ("-c", bootstrap))
+
+    return None
 
 
 def _resolve_server_command(config: dict[str, Any]) -> _ServerCommand:
@@ -310,7 +319,7 @@ def _resolve_server_command(config: dict[str, Any]) -> _ServerCommand:
             command = _clone_command(path)
             if command is None:
                 raise RuntimeError(
-                    "imagen_mcp_path is not a compatible imagen-mcp >=0.4 checkout "
+                    "imagen_mcp_path is not a compatible imagen-mcp >=0.5 checkout "
                     "(expected pyproject.toml and imagen_mcp/__main__.py)"
                 )
             return command

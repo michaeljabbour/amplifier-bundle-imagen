@@ -1,6 +1,6 @@
 bundle:
   name: imagen-local-dev
-  version: 2.0.0
+  version: 2.1.0
   description: Dev variant using the local bundle checkout — for testing bundle changes before push. Loads the native tool-imagen module from the same checkout.
 
 includes:

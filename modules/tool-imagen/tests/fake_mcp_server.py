@@ -54,7 +54,7 @@ class BatchInput(BaseModel):
 
 
 mcp = FastMCP("imagen_mcp")
-mcp._mcp_server.version = "0.4.0"
+mcp._mcp_server.version = "0.5.0"
 
 
 @mcp.tool(name="generate_image")
