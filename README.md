@@ -3,10 +3,11 @@
 An adaptive Amplifier image studio: OpenAI/Gemini generation and editing,
 specialist creative direction, human approval gates, capability-gated visual QA, accessibility,
 and artifact provenance. Provider calls are supplied by
-[`imagen-mcp`](https://github.com/michaeljabbour/imagen-mcp) through the native
+[`imagen`](https://github.com/michaeljabbour/imagen) (renamed from `imagen-mcp`;
+the MCP server executable is still called `imagen-mcp`) through the native
 `tool-imagen` adapter.
 
-> **Release status:** 2.0.0 is published as the immutable `v2.0.0` Git tag.
+> **Release status:** 2.1.0 is published as the immutable `v2.1.0` Git tag.
 > Pin that tag for reproducible use; reserve a local checkout for development.
 
 ## What it provides
@@ -26,8 +27,9 @@ documentation does not override the live schemas of allowed tools.
 
 ## Prerequisites
 
-1. Independently install `imagen-mcp` from its immutable `v0.4.0` tag or
-   initialize a compatible local checkout according to its repository instructions.
+1. Independently install `imagen` (the renamed `imagen-mcp` project) from its
+   immutable `v0.5.0` tag or initialize a compatible local checkout according
+   to its repository instructions.
 2. Set at least one provider credential:
 
 ```bash
@@ -39,7 +41,7 @@ export GEMINI_API_KEY="..."
    this) and verify the mounted tools with `list_providers`.
 
 The two projects are intentionally independent: this bundle neither installs
-nor imports imagen-mcp, and imagen-mcp has no Amplifier dependency. At runtime,
+nor imports imagen, and imagen has no Amplifier dependency. At runtime,
 configure an explicit checkout/executable or put the separately installed
 `imagen-mcp` console script on `PATH`; the adapter communicates only over MCP.
 
@@ -205,6 +207,8 @@ project-context/         persistent project coordination
 See [`CHANGELOG.md`](CHANGELOG.md). The 2.0.0 release passed deterministic CI,
 clean adapter packaging, real MCP initialize/`tools/list` compatibility against
 independently released `imagen-mcp` v0.4.0, and bounded live provider canaries.
+The 2.1.0 release follows the `imagen-mcp` -> `imagen` project rename and
+targets the renamed project's `v0.5.0` release, passing the same checks.
 
 ## License
 

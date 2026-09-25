@@ -1,6 +1,6 @@
 bundle:
   name: image-generation-behavior
-  version: 2.0.0
+  version: 2.1.0
   description: Self-contained adaptive image generation with direction, prompt engineering, policy preflight, visual QA, and provider tools
 
 tools:
@@ -17,7 +17,7 @@ tools:
       # Plain local paths resolve from the consumer cwd, not this bundle. Pin
       # the self-source to the same immutable release as the behavior.
       skills:
-        - "git+https://github.com/michaeljabbour/amplifier-bundle-imagen@v2.0.0#subdirectory=skills"
+        - "git+https://github.com/michaeljabbour/amplifier-bundle-imagen@v2.1.0#subdirectory=skills"
       visibility:
         enabled: true
         inject_role: "user"

@@ -1,6 +1,6 @@
 bundle:
   name: imagegen-behavior
-  version: 2.0.0
+  version: 2.1.0
   description: Full adaptive image studio — generation, editing, specialist review, skill discovery, policy preflight, approval gates, and artifact delivery
 
 includes:
